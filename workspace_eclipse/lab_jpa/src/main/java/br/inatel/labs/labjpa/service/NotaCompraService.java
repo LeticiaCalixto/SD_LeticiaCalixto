@@ -1,53 +1,63 @@
 package br.inatel.labs.labjpa.service;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.inatel.labs.labjpa.entity.NotaCompra;
 import br.inatel.labs.labjpa.entity.NotaCompraItem;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import br.inatel.labs.labjpa.repository.NotaCompraItemRepository;
+import br.inatel.labs.labjpa.repository.NotaCompraRepository;
 
 @Service
 @Transactional
-public class NotaCompraService 
-{
-	@PersistenceContext
-	private EntityManager em;
+public class NotaCompraService {
+
+	@Autowired
+	private NotaCompraRepository notaCompraRepository;
 	
-	//nota compra ======================================================================================================
-	
-	public NotaCompra salvar(NotaCompra nc)
-	{
-		return em.merge(nc);
+	@Autowired
+	private NotaCompraItemRepository notaCompraItemRepository;
+
+	public NotaCompra salvar(NotaCompra nc) {
+		return notaCompraRepository.save(nc);
+	}
+
+	public Optional<NotaCompra> buscarNotaCompraPeloid(Long id) {
+		return notaCompraRepository.findById(id);
 	}
 	
-	public NotaCompra buscarNotaCompraPeloId(Long id)
-	{
-		return em.find(NotaCompra.class, id);
-	}
+	public NotaCompra buscarNotaCompraPeloIdComListaItem(Long id) {
 	
-	public List<NotaCompra> listarNotaCompra ()
-	{
-		return em.createQuery("select nc from NotaCompra nc", NotaCompra.class).getResultList();
+		Optional<NotaCompra> opNotaCompra = notaCompraRepository.findById(id);
+		
+		if(opNotaCompra.isPresent()) {
+			NotaCompra notaCompra = opNotaCompra.get();
+			notaCompra.getListaNotaCompraItem().size();
+			return notaCompra;
+		}
+		
+		
+		return null; 
 	}
-	
-	//nota compra item ==================================================================================================
-	
-	public NotaCompraItem salvar(NotaCompraItem item)
-	{
-		return em.merge(item);
+
+	public List<NotaCompra> listaNotaCompra() {
+		return notaCompraRepository.findAll();
 	}
-	
-	public NotaCompraItem buscarNotaCompraItemPeloId(Long id)
-	{
-		return em.find(NotaCompraItem.class, id);
+
+	public NotaCompraItem salvar(NotaCompraItem item) {
+		return notaCompraItemRepository.save(item);
 	}
-	
-	public List<NotaCompraItem> listarNotaCompraItem ()
-	{
-		return em.createQuery("select item from NotaCompraItem item", NotaCompraItem.class).getResultList();
+
+	public Optional<NotaCompraItem> buscarNotaCompraItemPeloId(Long id) {
+		return notaCompraItemRepository.findById(id);
 	}
+
+	public List<NotaCompraItem> listaNotaCompraItem() {
+		return notaCompraItemRepository.findAll();
+	}
+
 }

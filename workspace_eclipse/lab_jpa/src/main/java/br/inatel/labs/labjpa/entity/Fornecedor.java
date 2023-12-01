@@ -12,27 +12,23 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity
-public class Fornecedor
-{
+public class Fornecedor {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-	@ManyToMany
-	private List<Produto> listaProduto;
-
+	
 	@NotNull
 	@Size(min = 2, max = 200)
 	private String razaoSocial;
 	
-	//construtores
-	public Fornecedor()
-	{
-		
-	}
+	@ManyToMany
+	private List<Produto> listaProduto;
 	
-	public Fornecedor(@NotNull @Size(min = 2, max = 200) String razaoSocial)
-	{
+	
+	public Fornecedor() {}
+	
+	public Fornecedor(@NotNull @Size(min = 2, max = 200) String razaoSocial) {
 		super();
 		this.razaoSocial = razaoSocial;
 	}
@@ -45,12 +41,20 @@ public class Fornecedor
 		this.id = id;
 	}
 
+	public String getRazaoSocial() {
+		return razaoSocial;
+	}
+
+	public void setRazaoSocial(String razaoSocial) {
+		this.razaoSocial = razaoSocial;
+	}
+
 	public List<Produto> getListaProduto() {
 		return listaProduto;
 	}
 
-	public void setListaProduto(List<Produto> listaProduto) {
-		this.listaProduto = listaProduto;
+	public void setListaProduto(List<Produto> listaProducto) {
+		this.listaProduto = listaProducto;
 	}
 
 	@Override
@@ -69,5 +73,10 @@ public class Fornecedor
 		Fornecedor other = (Fornecedor) obj;
 		return Objects.equals(id, other.id);
 	}
-}
 
+	@Override
+	public String toString() {
+		return "Fornecedor [id=" + id + ", razaoSocial=" + razaoSocial + "]";
+	}
+
+}

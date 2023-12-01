@@ -15,35 +15,37 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 
 @Entity
-public class NotaCompra
-{
+public class NotaCompra {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@OneToMany(mappedBy = "notaCompra")
-	private List<NotaCompraItem> listaNotaCompraItem;
+	@NotNull
+	@Past
+	private LocalDate dataEmissao;
 
 	@ManyToOne
 	private Fornecedor fornecedor;
 
-	@NotNull
-	@Past
-	private LocalDate dataEmissao;
-	
-	public NotaCompra()
-	{
-		
+	@OneToMany(mappedBy = "notaCompra")
+	private List<NotaCompraItem> listaNotaCompraItem;
+
+	public NotaCompra() {
 	}
-	
-	public NotaCompra(@NotNull @Past LocalDate dataEmissao, Fornecedor fornecedor)
-	{
+
+	public NotaCompra(@NotNull @Past LocalDate dataEmissao, Fornecedor fornecedor) {
 		super();
-		this.fornecedor = fornecedor;
 		this.dataEmissao = dataEmissao;
+		this.fornecedor = fornecedor;
 	}
 
+	public BigDecimal getCalculoTotalNota() {
+		BigDecimal totalNota = listaNotaCompraItem.stream().map(i -> i.getCalculoTotalItem()).reduce(BigDecimal.ZERO,
+				BigDecimal::add);
 
+		return totalNota;
+	}
 
 	public Long getId() {
 		return id;
@@ -51,6 +53,14 @@ public class NotaCompra
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public LocalDate getDataEmissao() {
+		return dataEmissao;
+	}
+
+	public void setDataEmissao(LocalDate dataEmissao) {
+		this.dataEmissao = dataEmissao;
 	}
 
 	public Fornecedor getFornecedor() {
@@ -61,12 +71,12 @@ public class NotaCompra
 		this.fornecedor = fornecedor;
 	}
 
-	public LocalDate getDataEmissao() {
-		return dataEmissao;
+	public List<NotaCompraItem> getListaNotaCompraItem() {
+		return listaNotaCompraItem;
 	}
 
-	public void setDataEmissao(LocalDate dataEmissao) {
-		this.dataEmissao = dataEmissao;
+	public void setListaNotaCompraItem(List<NotaCompraItem> listaNotaCompraItem) {
+		this.listaNotaCompraItem = listaNotaCompraItem;
 	}
 
 	@Override
@@ -85,13 +95,9 @@ public class NotaCompra
 		NotaCompra other = (NotaCompra) obj;
 		return Objects.equals(id, other.id);
 	}
-	
-	public BigDecimal getCalculoTotalNota()
-	{
-	   BigDecimal total = this.listaNotaCompraItem.stream()
-	      .map(i -> i.getCalculoTotalItem())
-	      .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-	   return total;
+	@Override
+	public String toString() {
+		return "NotaCompra [id=" + id + ", dataEmissao=" + dataEmissao + "]";
 	}
 }
